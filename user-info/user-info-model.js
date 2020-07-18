@@ -8,20 +8,20 @@ module.exports = {
 };
 
 function find() {
-  return db("user_information").select("id",
-    "neighborhood_id",
-    "first_name",
-    "last_name",
-    "position",
-    "contact",
-    "email",
-    "phone",
-    "address_1",
-    "address_2",
-    "city",
-    "state",
-    "zip",
-    "newsletter");
+    return db("user_information").select("id",
+        "neighborhood_id",
+        "first_name",
+        "last_name",
+        "position",
+        "contact",
+        "email",
+        "phone",
+        "address_1",
+        "address_2",
+        "city",
+        "state",
+        "zip",
+        "newsletter");
 }
 
 function findBy(filter) {
