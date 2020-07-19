@@ -3,7 +3,7 @@ const router = require("express").Router();
 const Users = require("./user_credentials-model.js");
 const restricted = require("../middleware/restricted-middleware.js");
 
-router.get("/", (req, res) => {
+router.get("/", restricted, (req, res) => {
   Users.find()
     .then(users => {
       res.status(200).json(users);
@@ -13,7 +13,7 @@ router.get("/", (req, res) => {
     });
 });
 
-router.get("/:id", verifyUserId, (req, res) => {
+router.get("/:id", restricted, verifyUserId, (req, res) => {
   const id = req.params.id;
 
   Users.findById(id)
