@@ -3,10 +3,11 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const secrets = require("../config/secrets.js");
 
-const Users = require("./users-model.js");
+const Users = require("./user_credentials-model.js");
+const restricted = require("../middleware/restricted-middleware.js");
 
-// for endpoints beginning with /api/auth
-router.post("/register", validateUserContent, (req, res) => {
+// for endpoints beginning with /private; normally we wouldn't restrict a register but this is more to add an employee than for the public
+router.post("/addemployee", restricted, validateUserContent, (req, res) => {
   let user = req.body;
   const hash = bcrypt.hashSync(user.password, 10); // 2 ^ n
   user.password = hash;
