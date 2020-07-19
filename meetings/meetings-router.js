@@ -19,6 +19,19 @@ router.get("/", (req, res) => {
     );
 });
 
+router.get("/:id", restricted, verifyMeetingId, (req, res) => {
+  const id = req.params.id;
+
+  meetings
+    .findById(id)
+    .then((meeting) => {
+      res.status(200).json(meeting);
+    })
+    .catch((err) => {
+      res.status(500).json(err);
+    });
+});
+
 router.get("/search/:filter", (req, res) => {
   meetings
     .findBy(filter)
@@ -70,5 +83,24 @@ router.delete("/:id", restricted, (req, res) => {
         .json({ errorMessage: "Failed to delete meeting.", error: err });
     });
 });
+
+// ---------------------- Custom Middleware ---------------------- //
+
+function verifyMeetingId(req, res, next) {
+  const id = req.params.id;
+
+  meetings.findById(id)
+    .then(item => {
+      if (item) {
+        req.item = item;
+        next();
+      } else {
+        res.status(404).json({ message: "Meeting Not Found." });
+      }
+    })
+    .catch(err => {
+      res.status(500).json(err);
+    });
+}
 
 module.exports = router;

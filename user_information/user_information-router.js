@@ -41,7 +41,7 @@ router.post("/", restricted, (req, res) => {
     .catch((err) => res.status(500).json({ message: "Failed to add contact.", error: err }));
 });
 
-router.put("/:id", restricted, (req, res) => {
+router.put("/:id", restricted, verifyPrivateId, (req, res) => {
   const { id } = req.params;
   const body = req.body;
 
@@ -59,7 +59,7 @@ router.put("/:id", restricted, (req, res) => {
     );
 });
 
-router.delete("/:id", restricted, (req, res) => {
+router.delete("/:id", restricted, verifyPrivateId, (req, res) => {
   private
     .remove(req.params.id)
     .then((the) => res.status(204).end())
@@ -70,5 +70,24 @@ router.delete("/:id", restricted, (req, res) => {
         .json({ errorMessage: "Failed to delete contact.", error: err });
     });
 });
+
+// ---------------------- Custom Middleware ---------------------- //
+
+function verifyPrivateId(req, res, next) {
+  const id = req.params.id;
+
+  private.findById(id)
+    .then(item => {
+      if (item) {
+        req.item = item;
+        next();
+      } else {
+        res.status(404).json({ message: "Contact Not Found." });
+      }
+    })
+    .catch(err => {
+      res.status(500).json(err);
+    });
+}
 
 module.exports = router;
