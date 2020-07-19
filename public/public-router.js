@@ -19,6 +19,18 @@ router.get("/", (req, res) => {
     );
 });
 
+router.get("/:id", restricted, verifyNeighborhoodId, (req, res) => {
+  const id = req.params.id;
+
+  public.findById(id)
+    .then((neighborhood) => {
+      res.status(200).json(neighborhood);
+    })
+    .catch((err) => {
+      res.status(500).json(err);
+    });
+});
+
 router.get("/search/:filter", (req, res) => {
     public.findBy(filter)
         .then((public) => {
@@ -41,7 +53,7 @@ router.post("/", restricted, (req, res) => {
     .catch((err) => res.status(500).json({ error: err }));
 });
 
-router.put("/:id", restricted, (req, res) => {
+router.put("/:id", restricted, verifyNeighborhoodId, (req, res) => {
   const { id } = req.params;
   const body = req.body;
 
@@ -61,7 +73,7 @@ router.put("/:id", restricted, (req, res) => {
 
 router.delete(
   "/:id",
-  restricted,
+  restricted, verifyNeighborhoodId,
   (req, res) => {
     public
       .remove(req.params.id)
@@ -74,5 +86,24 @@ router.delete(
       });
   }
 );
+
+// ---------------------- Custom Middleware ---------------------- //
+
+function verifyNeighborhoodId(req, res, next) {
+  const id = req.params.id;
+
+  public.findById(id)
+    .then(item => {
+      if (item) {
+        req.item = item;
+        next();
+      } else {
+        res.status(404).json({ message: "Neighborhood Not Found." });
+      }
+    })
+    .catch(err => {
+      res.status(500).json(err);
+    });
+}
 
 module.exports = router;
